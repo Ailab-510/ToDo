@@ -10,19 +10,26 @@ body {
     background-color: #f0f2f5;
     display: flex;
     height: 100vh; 
-    width: 100vw;
-    overflow: hidden;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* ── 左側のサイドバーエリア ── */
 .sidebar {
     width: 280px;
-    background-color: #b93a93; 
     color: white;
     padding: 30px 20px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
+    background-image: url('img/43026c9f91109d0997169bfc54f2a89d.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    background-color: #b93a93; 
 }
 
 .sidebar h1 {
@@ -41,10 +48,13 @@ body {
     padding: 12px;
     border-radius: 8px;
     margin-bottom: 8px;
-    background-color: rgba(255,255,255,0.05);
     cursor: pointer;
     font-size: 14px;
-}
+    background-color: rgba(0,0,0,0.3);
+    color: #ffffff;
+    font-width: bold;
+    transition: all 0.2s;
+    }
 
 .sidebar-menu li.active {
     background-color: #f538bc; /* 青色のアクセント */
@@ -58,6 +68,8 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+
+    overflow-x: hidden;
 }
 
 * 上部の入力エリア */
@@ -113,7 +125,7 @@ input:focus {
 
 #todo-list li {
     background: white;
-    padding: ０; /*上・右・下・左*/
+    padding: 0 16px 0 0px; /*上・右・下・左*/
     margin-bottom: 12px;
     border-radius: 10px;
     display: flex;
@@ -132,16 +144,17 @@ input:focus {
 .task-content {
     display: flex;
     align-items: center;
-    gap: ０;
+    gap: 12px;
     flex: 1;
     padding: 16px 0px;
+
+    justify-content: space-between;
 }
 
 span{
     font-size: 16px;
     color: #1e293b;
     text-align: left; 
-    flex: 1; /
 }
 
 /* チェックボックスの見た目を少し大きく */
@@ -150,26 +163,34 @@ input[type="checkbox"] {
     height: 18px;
     cursor: pointer;
     margin: 0;
-    margin-left: -400px !important;
 }
 
-span {
-    font-size: 16px;
-    color: #1e293b;
-    text-align: left;
-    flex: 1;
-
-    padding-right: 16px;
+/* 💡 チェックが入った時グレーアウト */
+#todo-list li:has(.completed){
+    background: #978e95;
+    opacity: 0.6;
+    border-left-color: #605d5d;
 }
 
-/* 💡 チェックが入った時の「打ち消し線」のスタイル */
-.completed {
-    text-decoration: line-through;
-    color: #aaa;
+/*編集ボタン*/
+.edit-btn{
+    background-color: #e933b2;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
 }
 
+.edit-btn:hover{
+    background-color: #db059b;
+}
+
+/* 削除ボタン*/
 .delete-btn {
-    background-color: #f538bc;
+    background-color: #978e95;
     color: white;
     border: none;
     padding: 8px 10px;
@@ -183,16 +204,6 @@ span {
 
 .delete-btn:hover {
     background-color: #c82333;
-}
-
-.task-content span {
-    margin-left: -400px !important;
-}
-
-/* completedメニューが表示されている時は文字の打ち消し線を無しにする */
-#todo-list.completed span {
-    text-decoration: none !important;
-    color: #1e293b !important;
 }
 
 /* 完了済みタスク全消去ボタン */
@@ -231,12 +242,67 @@ body:has(#clear-completed-btn:not([style*="display: none"])) span {
     text-decoration-line: none !important; 
 }
 
+#todo-list .task-content{
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    padding: 16px 0px;
+}
+
+#todo-list li .task-left{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
+    margin-left: 0;
+    padding-left: 10px;
+}
+
+#todo-list li input[type="checkbox"]{
+    width: 18px;
+    height: 18px;
+    margin-left: 0;
+    margin-right: 0;
+    flex-shrink: 0;
+    flex: none;
+    position: static;
+    left: 0;
+}
+
+#todo-list li span:not(.todo-date):not(.task-time){
+    font-size: 16px;
+    color: #1e293b;
+    text-align: left;
+    flex: 1;
+    min-width: 0;
+    white-space: normal;
+    word-break: break-all;
+    margin-left: 0 !important;
+}
+
+#todo-list .task-right{
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+#todo-list .todo-date{
+    font-size: 14px;
+    color: #1e293b;
+    white-space: nowrap;
+}
+
 /* タスク追加日時表示デザイン */
-.task-time{
+#todo-list .task-time{
     font-size: 11px;
     color:#605d5d;
-    margin-left: auto;
-    padding-right: 15px;
     white-space: nowrap;
-    flex: none !important;
+    padding-right: 15px;
 }

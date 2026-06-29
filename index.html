@@ -27,12 +27,13 @@
     <div class="main-content">
         <div class="input-container">
             <input type="text" id="todo-input" placeholder="新しいタスクを入力...">
+            <input type="date" id="todo-date">
         </div>
 
        <div class="todo-wrapper">
             <ul id="todo-list"></ul>
-            <button id="clear-completed-btn" class="clear-btn" onclick="clearCompletedTodos()">全削除</button>
-        </div> </div></div>
+            <button id="clear-completed-btn" class="clear-btn" onclick="clearCompletedTodos()" style="display: none;">全削除</button>
+        </div> </div>
         <script src="script.js"></script>
 </body>
 </html>

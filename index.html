@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>マイ ToDo アプリ</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,30 +11,51 @@
     <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <div class="sidebar">
+    <aside class="sidebar">
+
         <div>
             <h1>To Do</h1>
-            <ul class="sidebar-menu">
-                <li id="menuAll" class="active">すべてのタスク</li>
-                <li id="menuActive">今日やる事</li>
-                <li id="menuCompleted">完了したタスク</li>
-            </ul>
-        </div>
-        <div style="font-size: 12px; color: #64748b;">Version 1.0.0</div>
-    </div>
 
-    <div class="main-content">
+            <ul class="sidebar-menu">
+            <li id="menuAll" class="active">すべてのタスク</li>
+            <li id="menuActive">今日やる事</li>
+            <li id="menuCompleted">完了したタスク</li>
+            </ul>
+
+        </div>
+
+        <div class="version">
+            Version 1.0.0
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
         <div class="input-container">
+
             <input type="text" id="todo-input" placeholder="新しいタスクを入力...">
             <input type="date" id="todo-date">
         </div>
 
        <div class="todo-wrapper">
+
             <ul id="todo-list"></ul>
-            <button id="clear-completed-btn" class="clear-btn" onclick="clearCompletedTodos()" style="display: none;">全削除</button>
-        </div> </div>
+
+            <button id="clear-completed-btn" 
+                    class="clear-btn" 
+                    style="display: none;"
+                    >全削除
+            </button>
+
+        </div> 
+
+    </main>
+
         <script src="script.js"></script>
+
 </body>
 </html>

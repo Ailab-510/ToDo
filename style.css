@@ -44,6 +44,11 @@ body {
     list-style: none;
 }
 
+.version {
+    font-size: 12px;
+    color: #64748b;
+}
+
 .sidebar-menu li {
     padding: 12px;
     border-radius: 8px;

@@ -10,7 +10,7 @@ let currentFilter = 'all';
 window.addEventListener('DOMContentLoaded',loadTodos);
 
 //　タスクを追加する処理の本体
-function excuteAddTask(){
+function executeAddTask(){
     const taskText = todoInput.value.trim();
     if(taskText === '')return;
 
@@ -21,6 +21,7 @@ function excuteAddTask(){
 
     // 新しいタスクデータ（オブジェクト）を作る
     const newTodo = {
+        id: Date.now(),
         text: taskText,
         isCompleted: false,
         time: timeText,
@@ -83,7 +84,7 @@ function createTodoElement(todoObj, filterType = 'all') {
 
     // チェックボックスがクリックされたときの動き
     checkbox.addEventListener('change', () => {
-        updateTodoStatus(todoObj.text, checkbox.checked);
+        updateTodoStatus(todoObj.id, checkbox.checked);
 
         if (checkbox.checked) {
             span.classList.add('completed');
@@ -145,7 +146,7 @@ function createTodoElement(todoObj, filterType = 'all') {
     
     deleteBtn.addEventListener('click', () => {
         li.remove();
-        deleteTodo(todoObj.text);
+        deleteTodo(todoObj.id);
     });
 
     // 部品を組み立てる
@@ -180,28 +181,36 @@ function saveTodo(todoObj) {
 
 // 読み込み
 function loadTodos() {
+    filterTodos('all');
     let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
     todos.forEach(todoObj => createTodoElement(todoObj,'all'));
 }
 
 // 状態（チェックの有無）の更新
-function updateTodoStatus(taskText, isCompleted) {
+function updateTodoStatus(taskId, isCompleted) {
     let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
     todos = todos.map(todo => {
-        if (todo.text === taskText) {
+        if (todo.text === taskId) {
             todo.isCompleted = isCompleted;
         }
+
         return todo;
     });
+    
     localStorage.setItem('todos', JSON.stringify(todos));
 }
 
 // 削除
-function deleteTodo(taskText) {
+function deleteTodo(taskId) {
     let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
-    todos = todos.filter(todo => todo.text !== taskText);
+    todos = todos.filter(todo => todo.id !== taskId);
     localStorage.setItem('todos', JSON.stringify(todos));
 }
+
+//全削除ボタン
+const clearCompletedBtn = document.getElementById('clear-completed-btn');
+
+clearCompletedBtn.addEventListener('click', clearCompletedTodos);
 
 // メニュー切り替え機能
 const menuAll = document.getElementById('menuAll');

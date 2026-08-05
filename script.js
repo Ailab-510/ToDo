@@ -182,8 +182,6 @@ function saveTodo(todoObj) {
 // 読み込み
 function loadTodos() {
     filterTodos('all');
-    let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
-    todos.forEach(todoObj => createTodoElement(todoObj,'all'));
 }
 
 // 状態（チェックの有無）の更新

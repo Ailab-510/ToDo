@@ -2,6 +2,7 @@
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
 const todoDate = document.getElementById('todo-date');
+const addTodoBtn = document.getElementById('add-todo-btn');
 
 //　今どのメニューが開かれているかを覚えておくための変数
 let currentFilter = 'all';
@@ -10,7 +11,7 @@ let currentFilter = 'all';
 window.addEventListener('DOMContentLoaded',loadTodos);
 
 //　タスクを追加する処理の本体
-function executeAddTask(){
+function excuteAddTask(){
     const taskText = todoInput.value.trim();
     if(taskText === '')return;
 
@@ -51,6 +52,12 @@ todoDate.addEventListener('keyup',(event) => {
     if (event.key !== 'Enter') return;
     excuteAddTask();
 });
+
+// 確定ボタンをクリックした時の処理
+addTodoBtn.addEventListener('click', () => {
+    excuteAddTask();
+});
+
 
 // 💡 3. タスクを画面に作る関数
 function createTodoElement(todoObj, filterType = 'all') {
@@ -188,7 +195,7 @@ function loadTodos() {
 function updateTodoStatus(taskId, isCompleted) {
     let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
     todos = todos.map(todo => {
-        if (todo.text === taskId) {
+        if (todo.id === taskId) {
             todo.isCompleted = isCompleted;
         }
 

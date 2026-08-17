@@ -77,15 +77,53 @@ body {
     overflow-x: hidden;
 }
 
-/* 上部の入力エリア */
+/* タスク入力エリア */
 .input-area {
     display: flex;
-    gap: 12px;
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    margin-bottom: 30px;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 6px;
+    width: fit-content;
+    margin-bottom: 18px;
+}
+
+/* タスク入力欄 */
+#todo-input {
+    width: 300px;
+    flex: none;
+    padding: 12px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    font-size: 16px;
+    outline: none;
+}
+
+/* 期限入力欄 */
+#todo-date {
+    width: 150px;
+    flex: none;
+    padding: 10px 10px;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    font-size: 14px;
+    outline: none;
+}
+
+/* 確定ボタン */
+#add-todo-btn {
+    padding: 10px 18px;
+    background-color: #f538bc;
+    color: white;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+#add-todo-btn:hover {
+    background-color: #db059b;
 }
 
 input {

@@ -238,7 +238,7 @@ input[type="checkbox"] {
     border: none;
     padding: 8px 10px;
     border-radius: 16px;
-    margin-right: 8px;
+    margin-right: 2px;
     cursor: pointer;
     font-size: 13px;
     font-weight: bold;
@@ -370,4 +370,44 @@ body:has(#clear-completed-btn:not([style*="display: none"])) span {
 
 #add-todo-btn:active{
     transform: scale(0.98);
+}
+
+/** タスクリストの項目名 **/
+.todo-header {
+    display: flex;
+    align-items: center;
+    padding: 0 16px 8px 14px;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: hold;
+}
+
+/* タスク */
+.header-task {
+    flex: 1;
+    padding-left: 35px;
+}
+
+/* 期限 */
+.header-date {
+    width: 90px;
+    text-align: center;
+}
+
+/* 入力日時 */
+.header-time {
+    width: 80px;
+    text-align: center;
+}
+
+/* 編集 */
+.header-edit {
+    width: 50px;
+    text-align: center;
+}
+
+/* 削除 */
+.header-delete {
+    width: 55px;
+    text-align: center;
 }

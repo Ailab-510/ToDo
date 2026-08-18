@@ -1,0 +1,24 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://Ailab-510/ToDo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ailab-510/ToDo/issues"
+  },
+  "homepage": "https://github.com/Ailab-510/ToDo#readme",
+  "devDependencies": {
+    "electron": "^43.4.0"
+  }
+}

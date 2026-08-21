@@ -1,14 +1,8 @@
-const { create } = require("node:domain");
+// ウィジェットのタスクリスト
+const widgetTodoList = document.getElementById('widget-todo-list');
 
-const widgetList = document.getElementById('widget-todo-list');
-
-function loadWidgetTodos() {
-
-    const todos = localStorage.getItem('todos')
-        ? JSON.parse(localStorage.getItem('todos'))
-        : [];
-
-    widgetList.innerHTML = '';
+// 今日の日付の取得
+function getTodayDate() {
 
     const today = new Date();
 
@@ -16,63 +10,67 @@ function loadWidgetTodos() {
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');
 
-    const todayText = '${year}-${month}-${day}';
-
-    const todayTodos = todos.filter(todo => {
-        return todo.date === todayText && !todo.isCompleted;
-    });
-
-    todayTodos.array.forEach(todo => {
-        createWidgetTodo(todo);
-    });
+    return '${year}-${month}-${day}';
 
 }
 
-function createWidgetTodo(todo) {
+// 今日のタスクを読み込む
+function loadTodayTodos() {
 
-    const li = document.createElement('li');
+    widgetTodoList.innerHTML = '';
 
-    const checkbox = document.createElement('input');
-
-    checkbox.type = 'checkbox';
-
-    const span = document.createElement('span');
-
-    span.classList.add('widget-task-text');
-
-    span.textContent = todo.text;
-
-    checkbox.addEventListener('change',() => {
-
-        if (!checkbox.checked) return;
-
-        updateTodoStatus(todo.text, true);
-
-        li.remove();
-    });
-
-    li.appendChild(checkbox);
-    li.appendChild(span);
-
-    widgetList.appendChild(li);
-}
-
-function updateTodoStatus(taskText, isCompleted) {
-
-    let todos = localStorage.getItem('todos')
+    const todos = localStorage.getItem('todos')
         ? JSON.parse(localStorage.getItem('todos'))
         : [];
 
-    todos = todos.map(todo => {
+    const today = getTodayDate();
 
-        if (todo.text === taskText) {
-            todo.isCompleted = isCompleted;
-        }
+    // 今日が期限のみ完了タスクだけ取得
+    const todayTodos = todos.filter(todo => {
 
-        return todo;
+        return todo.date === today && !todo.isCompleted;
+
     });
 
-    localStorage.setItem('todos',JSON.stringify(todos));
+    // タスクを表示
+    todayTodos.forEach(todo => {
+
+        const li = document.createElement('li');
+
+        //チェックボックス
+        const checkbox = document.createElement('input');
+
+        checkbox.type = 'checkbox';
+
+        // タスク文字
+        const span = document.createElement('span');
+
+        span.textContent = todo.text;
+
+        // チェックした時
+        checkbox.addEventListener('change', () => {
+
+            if (checkbox.checked) {
+                todo.isCompleted = true;
+                saveTodos(todos);
+                li.remove();
+            }
+        });
+
+        li.appendChild(checkbox);li.appendChild(span);
+
+        widgetTodoList.appendChild(li);
+    });
 }
 
-loadWidgetTodos();
+// LocalStorageへの保存
+function saveTodos(todos) {
+
+    localStorage.setItem(
+        'todos',
+        JSON.stringify(todos)
+    );
+}
+
+// ウィジェット起動
+loadTodayTodos();

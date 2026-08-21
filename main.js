@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 let mainWindow;
@@ -29,6 +29,7 @@ function createWidgetWindow() {
     widgetWindow = new BrowserWindow({
         width: 300,
         height: 300,
+        
         frame: false,
         alwaysOnTop: true,
         skipTaskbar: true,
@@ -54,3 +55,49 @@ app.whenReady().then(() => {
     createWidgetWindow();
 
 });
+
+// ウィジェットからの返信
+// 今日のタスクを取得
+ipcMain.handle('get-today-todos', () => {
+    const todos = getTodos();
+    const today = getTodayDate();
+
+    return todos.filter(todo => {
+        return todo.date === today && !todo.isCompleted;
+    });
+});
+
+//　タスクを完了する
+ipcMain.handle('complete-todo', (event, taskTask) => {
+    let todos =getTodos();
+    todos = todos.map(todo => {
+        if (todo.text === taskText) {
+            todo.isCompleted = true;
+        }
+        return todo;
+    });
+    saveTodos(todos);
+    return true;
+});
+
+// 本体アプリを表示
+ipcMain.on('open-main-window', () => {
+    if (mainWindow) {
+        mainWindow.show();
+        mainWindow.focus();
+    }
+});
+
+// LocalStrageではなくElectron
+function getTodos() {
+    return [];
+}
+
+function getTodayDate() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}

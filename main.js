@@ -1,3 +1,4 @@
+const { resolve } = require('dns');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
@@ -7,9 +8,11 @@ let widgetWindow;
 // Todo本体のウィンドウ
 
 function createMainWindow() {
+
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
         }
@@ -29,7 +32,7 @@ function createWidgetWindow() {
     widgetWindow = new BrowserWindow({
         width: 300,
         height: 300,
-        
+
         frame: false,
         alwaysOnTop: true,
         skipTaskbar: true,
@@ -49,52 +52,88 @@ function createWidgetWindow() {
 }
 
 // Electron起動時
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
 
     createMainWindow();
+
+    await new Promise(resolve => {
+        mainWindow.webContents.once('did-finish-load', resolve);
+    });
+
     createWidgetWindow();
 
 });
 
 // ウィジェットからの返信
 // 今日のタスクを取得
-ipcMain.handle('get-today-todos', () => {
-    const todos = getTodos();
+ipcMain.handle('get-today-todos', async () => {
+
+    const todos = await getTodos();
     const today = getTodayDate();
 
-    return todos.filter(todo => {
+    console.log('今日の日付:', today);
+    console.log('取得したタスク:',todos);
+
+    const todayTodos = todos.filter(todo => {
         return todo.date === today && !todo.isCompleted;
     });
+
+    console.log('今日のタスク:', todayTodos);
+
+    return todayTodos;
 });
 
 //　タスクを完了する
-ipcMain.handle('complete-todo', (event, taskTask) => {
-    let todos =getTodos();
-    todos = todos.map(todo => {
-        if (todo.text === taskText) {
-            todo.isCompleted = true;
+ipcMain.handle('complete-todo', async (event, taskId) => {
+
+        if (!mainWindow) {
+            return false;
         }
-        return todo;
-    });
-    saveTodos(todos);
+
+        const todos = await getTodos();
+
+        const updateTodos = todos.map(todo => {
+
+            if (todo.id === taskId){
+                todo.isCompleted = true;
+            }
+
+            return todo;
+        });
+
+        const json = JSON.stringify(updateTodos);
+
+        await mainWindow.webContents.executeJavaScript(`localStorage.setItem('todos', ${JSON.stringify(json)});`);
+
     return true;
 });
 
 // 本体アプリを表示
 ipcMain.on('open-main-window', () => {
+
     if (mainWindow) {
         mainWindow.show();
         mainWindow.focus();
     }
 });
 
-// LocalStrageではなくElectron
-function getTodos() {
-    return [];
+// LocalStorageからタスクを取得
+async function getTodos() {
+
+    if(!mainWindow) {
+        return [];
+    }
+
+    const todos = await mainWindow.webContents.executeJavaScript(`JSON.parse(localStorage.getItem('todos') || '[]')`);
+
+    return todos;
 }
 
+// 今日の日付を取得
 function getTodayDate() {
+
     const today = new Date();
+
     const year = today.getFullYear();
     const month = String(today.getMonth() + 1).padStart(2, '0');
     const day = String(today.getDate()).padStart(2, '0');

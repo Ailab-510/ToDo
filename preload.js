@@ -7,7 +7,7 @@ contextBridge.exposeInMainWorld('electronAPI',{
         return ipcRenderer.invoke('get-today-todos');
     },
 
-    // タスクを完了にする
+    // タスクを完了する
     completeTodo: (taskId) => {
         return ipcRenderer.invoke('complete-todo', taskId);
     },

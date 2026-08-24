@@ -24,10 +24,10 @@ async function loadTodayTodos() {
         span.classList.add('widget-task-text');
 
         // チェックされた時
-        chackbox.addEventListener('change', async () => {
+        checkbox.addEventListener('change', async () => {
 
             if (checkbox.checked) {
-                await window.electronAPI.CompleteTodo(todo.id);
+                await window.electronAPI.completeTodo(todo.id);
 
                 // ウィジェットから消す
                 li.remove();

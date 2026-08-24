@@ -1,5 +1,19 @@
 // ウィジェットのタスクリスト
 const widgetTodoList = document.getElementById('widget-todo-list');
+const widget = document.getElementById('widget');
+
+// ウィジェット本体をクリックした時
+widget.addEventListener('click', (event) => {
+
+    // リストクリック時は何もしない
+    if (event.target.closest('#widget-todo-list')) {
+        return;
+    }
+
+    // 本体アプリを開く
+    window.electronAPI.openMainWindow();
+
+});
 
 // 今日の日付の取得
 async function loadTodayTodos() {
@@ -24,8 +38,13 @@ async function loadTodayTodos() {
         span.classList.add('widget-task-text');
 
         // チェックされた時
+        checkbox.addEventListener('click', (event) => {
+            
+            // クリックがliに伝わるのを防ぐ
+            event.stopPropagation();
+        });
+        
         checkbox.addEventListener('change', async () => {
-
             if (checkbox.checked) {
                 await window.electronAPI.completeTodo(todo.id);
 

@@ -111,10 +111,20 @@ ipcMain.handle('complete-todo', async (event, taskId) => {
 // 本体アプリを表示
 ipcMain.on('open-main-window', () => {
 
-    if (mainWindow) {
-        mainWindow.show();
-        mainWindow.focus();
+    // 本体が存在しない場合は新しく作る
+    if (!mainWindow) {
+        createMainWindow();
+        return;
     }
+
+    // 本体が存在する場合
+    if (mainWindow.isMinimized()){
+        mainWindow.restore();
+    }
+
+    mainWindow.show();
+    mainWindow.focus();
+
 });
 
 // LocalStorageからタスクを取得

@@ -1,19 +1,24 @@
 // ウィジェットのタスクリスト
 const widgetTodoList = document.getElementById('widget-todo-list');
 const widget = document.getElementById('widget');
+const dragBar = document.getElementById('drag-bar');
 
-// ウィジェット本体をクリックした時
+// ウィジェットの空白部分をクリック
 widget.addEventListener('click', (event) => {
 
-    // リストクリック時は何もしない
+    // ドラッグバーは何もない
+    if (event.target.closest('#drag-bar')) {
+        return;
+    }
+
+    // タスク部分何もしない
     if (event.target.closest('#widget-todo-list')) {
         return;
     }
 
-    // 本体アプリを開く
     window.electronAPI.openMainWindow();
 
-});
+})
 
 // 今日の日付の取得
 async function loadTodayTodos() {

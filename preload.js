@@ -15,5 +15,20 @@ contextBridge.exposeInMainWorld('electronAPI',{
     // 本体アプリを表示
     openMainWindow: () => {
         ipcRenderer.send('open-main-window');
+    },
+
+    // ウィジェットを移動
+    moveWidget: (x, y) => {
+        ipcRenderer.send('move-widget', x, y);
+    },
+
+    // ウィジェットの現在位置を取得
+    getWidgetPosition: () => {
+        return ipcRenderer.invoke('get-widget-position');
+    },
+
+    // ウィジェット位置を保存
+    saveWidgetPosition: (x, y) => {
+        ipcRenderer.send('save-widget-position', x, y);
     }
 });

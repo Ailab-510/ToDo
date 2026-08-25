@@ -1,4 +1,3 @@
-const { resolve } = require('dns');
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
@@ -30,8 +29,10 @@ function createMainWindow() {
 
 function createWidgetWindow() {
     widgetWindow = new BrowserWindow({
-        width: 300,
-        height: 300,
+        width: 250,
+        height: 250,
+
+        resizable: false,
 
         frame: false,
         alwaysOnTop: true,
@@ -42,6 +43,16 @@ function createWidgetWindow() {
             preload: path.join(__dirname, 'preload.js')
         }
     });
+
+    // 保存されている位置を取得
+    const savePosition = getWidgetPosition();
+
+    if (savePosition) {
+        widgetWindow.setPosition(
+            savePosition.x,
+            savePosition.y
+        );
+    }
     
    widgetWindow.loadFile('widget.html');
 
@@ -149,4 +160,40 @@ function getTodayDate() {
     const day = String(today.getDate()).padStart(2, '0');
 
     return `${year}-${month}-${day}`;
+}
+
+// ウィジェットの移動
+ipcMain.on('move-widget', (event, x, y) => {
+
+    if (widgetWindow) {
+        widgetWindow.setPosition(Math.round(x),Math.round(y));
+    }
+})
+
+// ウィジェット現在位置の取得
+ipcMain.handle('get-widget-position' , () => {
+
+    if (widgetWindow) {
+        const [x, y] = widgetWindow.getPosition();
+
+        return { x: x, y: y};
+    }
+
+    return { x: 0, y: 0};
+});
+
+// ウィジェット位置の保存
+let widgetPosition = null;
+
+ipcMain.on('save-widget-position', (event, x, y) => {
+
+    widgetPosition = {
+        x: x,
+        y: y
+    };
+});
+
+// 保存した位置を取得
+function getWidgetPosition() {
+    return widgetPosition;
 }

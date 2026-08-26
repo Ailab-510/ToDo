@@ -1,5 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const fs = require('fs');
+const { resolve } = require('dns');
 
 let mainWindow;
 let widgetWindow;
@@ -11,6 +13,8 @@ function createMainWindow() {
     mainWindow = new BrowserWindow({
         width: 1200,
         height: 800,
+
+        show: false,
 
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
@@ -56,6 +60,17 @@ function createWidgetWindow() {
     
    widgetWindow.loadFile('widget.html');
 
+   // ウィジェットを移動した時
+    widgetWindow.on('move', () => {
+
+        if (!widgetWindow) {
+            return;
+        }
+
+        const [x, y] = widgetWindow.getPosition();
+        saveWidgetPosition(x, y);
+    });
+
     //　ウィジェットを閉じた時
     widgetWindow.on('closed', () => {
         widgetWindow = null;
@@ -65,21 +80,40 @@ function createWidgetWindow() {
 // Electron起動時
 app.whenReady().then(async () => {
 
+    // Mac起動時にElectronを自動起動
+    if (process.platform === 'darwin'){
+
+        app.setLoginItemSettings({
+            openAtLogin: true,
+            openAsHidden: false
+        });
+
+        console.log('自動起動設定:', app.getLoginItemSettings());
+
+    }
+    // 本体を裏で起動
     createMainWindow();
 
+    // 本体の読み込みが完了するまで待つ
     await new Promise(resolve => {
-        mainWindow.webContents.once('did-finish-load', resolve);
+
+        mainWindow.webContents.once(
+            'did-finish-load',
+            resolve
+        );
+
     });
 
+    // Mac起動時はウィジェットのみ表示
     createWidgetWindow();
 
 });
 
-// ウィジェットからの返信
 // 今日のタスクを取得
 ipcMain.handle('get-today-todos', async () => {
 
     const todos = await getTodos();
+
     const today = getTodayDate();
 
     console.log('今日の日付:', today);
@@ -125,10 +159,17 @@ ipcMain.on('open-main-window', () => {
     // 本体が存在しない場合は新しく作る
     if (!mainWindow) {
         createMainWindow();
+
+        mainWindow.once('ready-to-show', () => {
+            mainWindow.show();
+            mainWindow.focus();
+
+        });
+
         return;
     }
 
-    // 本体が存在する場合
+    // 本体が最小化されていた場合
     if (mainWindow.isMinimized()){
         mainWindow.restore();
     }
@@ -162,14 +203,6 @@ function getTodayDate() {
     return `${year}-${month}-${day}`;
 }
 
-// ウィジェットの移動
-ipcMain.on('move-widget', (event, x, y) => {
-
-    if (widgetWindow) {
-        widgetWindow.setPosition(Math.round(x),Math.round(y));
-    }
-})
-
 // ウィジェット現在位置の取得
 ipcMain.handle('get-widget-position' , () => {
 
@@ -182,18 +215,44 @@ ipcMain.handle('get-widget-position' , () => {
     return { x: 0, y: 0};
 });
 
-// ウィジェット位置の保存
-let widgetPosition = null;
-
-ipcMain.on('save-widget-position', (event, x, y) => {
-
-    widgetPosition = {
-        x: x,
-        y: y
-    };
-});
+// ウィジェット位置保存
+function getPositionFile() {
+    return path.join( app.getPath('userData'), 'widget-position.json' );
+}
 
 // 保存した位置を取得
 function getWidgetPosition() {
-    return widgetPosition;
+    const filePath = getPositionFile();
+    try {
+        if (fs.existsSync(filePath)) {
+            const data = fs.readFileSync( filePath, 'utf-8');
+            return JSON.parse(data);
+        }
+    } catch (error) {
+        console.error(
+            'ウィジェット位置の読み込みに失敗:',
+            error
+        );
+    }
+    return null;
+}
+
+// ウィジェット位置を保存
+function saveWidgetPosition(x, y) {
+    const position = { x: x, y: y };
+
+    try {
+        fs.writeFileSync(
+            getPositionFile(),
+            JSON.stringify(position)
+        );
+
+        console.log('ウィジェット位置を保存:', position);
+
+    } catch (error) {
+        console.error(
+            'ウィジェット位置の保存に失敗:',
+            error
+        );
+    }
 }

@@ -39,7 +39,7 @@ function createWidgetWindow() {
         resizable: false,
 
         frame: false,
-        alwaysOnTop: true,
+        alwaysOnTop: false,
         skipTaskbar: true,
         transparent: true,
 
@@ -47,6 +47,8 @@ function createWidgetWindow() {
             preload: path.join(__dirname, 'preload.js')
         }
     });
+
+    widgetWindow.setAlwaysOnTop(false);
 
     // 保存されている位置を取得
     const savePosition = getWidgetPosition();

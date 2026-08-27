@@ -153,6 +153,15 @@ ipcMain.handle('complete-todo', async (event, taskId) => {
     return true;
 });
 
+// 本体のタスク変更をウィジェットへ通知
+ipcMain.on('todo-changed', () => {
+
+    if (widgetWindow) {
+        widgetWindow.webContents.send('todo-changed');
+    }
+
+});
+
 // 本体アプリを表示
 ipcMain.on('open-main-window', () => {
 

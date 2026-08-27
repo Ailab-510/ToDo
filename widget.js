@@ -68,3 +68,8 @@ async function loadTodayTodos() {
 
 // ウィジェット起動
 loadTodayTodos();
+
+window.electronAPI.onTodoChanged(() => {
+    console.log('タスク変更通知を受領しました')
+    loadTodayTodos();
+});

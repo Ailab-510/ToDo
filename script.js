@@ -32,6 +32,8 @@ function excuteAddTask(){
     createTodoElement(newTodo, 'all');
     saveTodo(newTodo);
 
+    window.electronAPI.notifyTodoChanged();
+
     todoDate.blur();
     todoInput.value = ''; // 入力欄をクリア
     todoDate.value = '';
@@ -62,6 +64,8 @@ addTodoBtn.addEventListener('click', () => {
 // 💡 3. タスクを画面に作る関数
 function createTodoElement(todoObj, filterType = 'all') {
     const li = document.createElement('li');
+
+    li.dataset.id = todoObj.id;
 
     // 左側のコンテンツ（チェックボックス＋文字）を入れる親要素
     const taskContent = document.createElement('div');
@@ -203,6 +207,9 @@ function updateTodoStatus(taskId, isCompleted) {
     });
     
     localStorage.setItem('todos', JSON.stringify(todos));
+
+    window.electronAPI.notifyTodoChanged();
+    
 }
 
 // 削除
@@ -210,6 +217,9 @@ function deleteTodo(taskId) {
     let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
     todos = todos.filter(todo => todo.id !== taskId);
     localStorage.setItem('todos', JSON.stringify(todos));
+
+    window.electronAPI.notifyTodoChanged();
+
 }
 
 //全削除ボタン
@@ -311,6 +321,7 @@ function saveAllTodos(){
             const dateText = dateSpan ? dateSpan.textContent.replace('〆: ','') : '期限なし';
 
             todos.push({
+                id: li.dataset.id,
                 text: textSpan.textContent,
                 isCompleted: checkbox ? checkbox.checked : false,
                 time: timeSpan ? timeSpan.textContent : '',
@@ -319,4 +330,7 @@ function saveAllTodos(){
         }
     });
     localStorage.setItem('todos',JSON.stringify(todos));
+
+    window.electronAPI.notifyTodoChanged();
+
 }

@@ -30,5 +30,17 @@ contextBridge.exposeInMainWorld('electronAPI',{
     // ウィジェット位置を保存
     saveWidgetPosition: (x, y) => {
         ipcRenderer.send('save-widget-position', x, y);
+    },
+
+    // 本体のタスク変更をウィジェットへ通知
+    notifyTodoChanged: () => {
+        ipcRenderer.send('todo-changed');
+    },
+
+    onTodoChanged: (callback) => {
+        ipcRenderer.on('todo-changed', () => {
+            callback();
+        });
     }
+    
 });

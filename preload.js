@@ -32,6 +32,17 @@ contextBridge.exposeInMainWorld('electronAPI',{
         ipcRenderer.send('save-widget-position', x, y);
     },
 
+    // ウィジェットサイズ
+    // ウィジェットの現在のサイズを取得
+    getWidgetSize: () => {
+        return ipcRenderer.invoke('get-widget-size');
+    },
+
+    // ウィジェットのサイズを変更
+    resizeWidget: (width, height) => {
+        ipcRenderer.send('resize-widget', width, height);
+    },
+
     // 本体のタスク変更をウィジェットへ通知
     notifyTodoChanged: () => {
         ipcRenderer.send('todo-changed');
@@ -42,5 +53,5 @@ contextBridge.exposeInMainWorld('electronAPI',{
             callback();
         });
     }
-    
+
 });

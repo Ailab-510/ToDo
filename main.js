@@ -214,6 +214,54 @@ function getTodayDate() {
     return `${year}-${month}-${day}`;
 }
 
+// ウィジェットサイズの取得
+ipcMain.handle('get-widget-size', () => {
+
+    if (widgetWindow) {
+
+        const [width, height] = widgetWindow.getSize();
+
+        return {
+            width: width,
+            height: height
+        };
+    }
+
+    return {
+        width: 250,
+        height: 250
+    };
+});
+
+// ウィジェットサイズの変更
+ipcMain.on('resize-widget', (event, width, height) => {
+
+    if (!widgetWindow) {
+        return;
+    }
+
+    // 最小サイズ
+    const minWidth = 200;
+    const minHeight = 150;
+
+    // 最大サイズ
+    const maxWidth = 600;
+    const maxHeight = 600;
+
+    width = Math.max(
+        minWidth,
+        Math.min(maxWidth, Math.round(width))
+    );
+
+    height = Math.max(
+        minHeight,
+        Math.min(maxHeight, Math.round(height))
+    );
+
+    widgetWindow.setSize(width, height);
+
+});
+
 // ウィジェット現在位置の取得
 ipcMain.handle('get-widget-position' , () => {
 

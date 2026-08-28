@@ -138,7 +138,10 @@ ipcMain.handle('complete-todo', async (event, taskId) => {
     }
 
     // 本体側の関数を実行してタスクを完了にする
-    await mainWindow.webContents.executeJavaScript(`updateTodoStatus(${JSON.stringify(taskId)}, true);`);
+    await mainWindow.webContents.executeJavaScript(`
+        updateTodoStatus(${JSON.stringify(taskId)}, true);
+        filterTodos('all');
+    `);
 
     // ウィジェットを更新
     if (widgetWindow) {

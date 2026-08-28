@@ -45,6 +45,9 @@ contextBridge.exposeInMainWorld('electronAPI',{
 
     // 本体のタスク変更をウィジェットへ通知
     notifyTodoChanged: () => {
+
+        console.log('preload: todo-changedを送信');
+        
         ipcRenderer.send('todo-changed');
     },
 

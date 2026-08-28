@@ -133,24 +133,17 @@ ipcMain.handle('get-today-todos', async () => {
 //　タスクを完了する
 ipcMain.handle('complete-todo', async (event, taskId) => {
 
-        if (!mainWindow) {
-            return false;
-        }
+    if (!mainWindow) {
+        return false;
+    }
 
-        const todos = await getTodos();
+    // 本体側の関数を実行してタスクを完了にする
+    await mainWindow.webContents.executeJavaScript(`updateTodoStatus(${JSON.stringify(taskId)}, true);`);
 
-        const updateTodos = todos.map(todo => {
-
-            if (todo.id === taskId){
-                todo.isCompleted = true;
-            }
-
-            return todo;
-        });
-
-        const json = JSON.stringify(updateTodos);
-
-        await mainWindow.webContents.executeJavaScript(`localStorage.setItem('todos', ${JSON.stringify(json)});`);
+    // ウィジェットを更新
+    if (widgetWindow) {
+        widgetWindow.webContents.send('todo-changed');
+    }
 
     return true;
 });
@@ -158,10 +151,18 @@ ipcMain.handle('complete-todo', async (event, taskId) => {
 // 本体のタスク変更をウィジェットへ通知
 ipcMain.on('todo-changed', () => {
 
-    if (widgetWindow) {
-        widgetWindow.webContents.send('todo-changed');
-    }
+    console.log('main.js: todo-changedを受信');
 
+    if (widgetWindow) {
+
+        console.log('main.js: ウィジェットへ通知');
+
+        widgetWindow.webContents.send('todo-changed');
+
+    } else {
+
+        console.log('main.js: widgetWindowがありません');
+    }
 });
 
 // 本体アプリを表示

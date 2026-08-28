@@ -199,7 +199,8 @@ function loadTodos() {
 function updateTodoStatus(taskId, isCompleted) {
     let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
     todos = todos.map(todo => {
-        if (todo.id === taskId) {
+
+        if (Number(todo.id) === Number(taskId)) {
             todo.isCompleted = isCompleted;
         }
 
@@ -207,6 +208,8 @@ function updateTodoStatus(taskId, isCompleted) {
     });
     
     localStorage.setItem('todos', JSON.stringify(todos));
+
+    console.log('タスク完了状態を更新:', taskId, isCompleted);
 
     window.electronAPI.notifyTodoChanged();
     
@@ -308,29 +311,42 @@ function clearCompletedTodos(){
 }
 
 function saveAllTodos(){
-    const todos = [];
+
+    // 現在保存されている全タスクを取得
+    let todos = localStorage.getItem('todos')
+        ? JSON.parse(localStorage.getItem('todos'))
+        : [];
+
     const liElements = todoList.querySelectorAll('li');
 
     liElements.forEach(li => {
+
         const textSpan = li.querySelector('.task-content span');
         const checkbox = li.querySelector('input[type="checkbox"]');
         const timeSpan = li.querySelector('.task-time');
         const dateSpan = li.querySelector('.todo-date');
 
-        if(textSpan){
+        if(!textSpan) return;
+
             const dateText = dateSpan ? dateSpan.textContent.replace('〆: ','') : '期限なし';
 
-            todos.push({
-                id: li.dataset.id,
-                text: textSpan.textContent,
-                isCompleted: checkbox ? checkbox.checked : false,
-                time: timeSpan ? timeSpan.textContent : '',
-                date: dateText
-            });
+            // 既存タスクをIDで探す
+            const todo = todos.find(todo => todo.id === taskId);
+
+        if (todo) {
+
+            todo.text = textSpan.textContent,
+            todo.isCompleted = checkbox ? checkbox.checked : false,
+            todo.time = timeSpan ? timeSpan.textContent : '',
+            todo.date = dateText;
+
         }
     });
+
+    // 全タスクを保存
     localStorage.setItem('todos',JSON.stringify(todos));
 
+    // ウィジェットへ通知
     window.electronAPI.notifyTodoChanged();
 
 }

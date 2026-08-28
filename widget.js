@@ -27,49 +27,72 @@ widget.addEventListener('click', (event) => {
 })
 
 // 今日の日付の取得
+let isLoadingTodos = false;
+
 async function loadTodayTodos() {
 
-    widgetTodoList.innerHTML = '';
+    if (isLoadingTodos) {
+        return;
+    }
 
-    // 今日のタスクの取得
-    const todayTodos = await window.electronAPI.getTodayTodos();
+    isLoadingTodos = true;
 
-    // タスクを表示
-    todayTodos.forEach(todo => {
-        const li = document.createElement('li');
+    try {
 
-        // チェックボックス
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
+        // 今日のタスクの取得
+        const todayTodos = await window.electronAPI.getTodayTodos();
 
-        // タスク文字
-        const span = document.createElement('span');
+        // データ取得後に一度だけリストをクリア
+        widgetTodoList.innerHTML = '';
 
-        span.textContent = todo.text;
-        span.classList.add('widget-task-text');
+        // タスクを表示
+        todayTodos.forEach(todo => {
 
-        // チェックされた時
-        checkbox.addEventListener('click', (event) => {
-            
-            // クリックがliに伝わるのを防ぐ
-            event.stopPropagation();
+            const li = document.createElement('li');
+
+            li.dataset.id = todo.id;
+
+            // チェックボックス
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+
+            // タスク文字
+            const span = document.createElement('span');
+
+            span.textContent = todo.text;
+            span.classList.add('widget-task-text');
+
+            // チェックボックスクリック
+            checkbox.addEventListener('click', (event) => {
+                event.stopPropagation();
+            });
+
+            // チェックされた時
+            checkbox.addEventListener('change', async () => {
+
+                if (checkbox.checked) {
+
+                    const result =
+                    await window.electronAPI.completeTodo(todo.id);
+
+                    if (result) {
+                        li.remove();
+                    }
+                }
+            });
+
+            li.appendChild(checkbox);
+            li.appendChild(span);
+
+            widgetTodoList.appendChild(li);
+
         });
-        
-        checkbox.addEventListener('change', async () => {
-            if (checkbox.checked) {
-                await window.electronAPI.completeTodo(todo.id);
 
-                // ウィジェットから消す
-                li.remove();
-            }
+    } finally {
 
-        });
+        isLoadingTodos = false;
 
-        li.appendChild(checkbox);
-        li.appendChild(span);
-
-        widgetTodoList.appendChild(li);
-    });
+    }
 }
 
 // ウィジェットのサイズ変更

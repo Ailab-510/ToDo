@@ -321,23 +321,35 @@ function saveAllTodos(){
 
     liElements.forEach(li => {
 
+        const taskId = li.dataset.id;
+
         const textSpan = li.querySelector('.task-content span');
         const checkbox = li.querySelector('input[type="checkbox"]');
         const timeSpan = li.querySelector('.task-time');
         const dateSpan = li.querySelector('.todo-date');
 
-        if(!textSpan) return;
+        if(!textSpan || !taskId) {
+            return;
+        }
 
-            const dateText = dateSpan ? dateSpan.textContent.replace('〆: ','') : '期限なし';
+        const dateText = dateSpan
+            ? dateSpan.textContent.replace('〆: ','')
+            : '期限なし';
 
             // 既存タスクをIDで探す
-            const todo = todos.find(todo => todo.id === taskId);
+        const todo = todos.find(todo => 
+            Number(todo.id) === Number(taskId)
+        );
 
         if (todo) {
 
-            todo.text = textSpan.textContent,
-            todo.isCompleted = checkbox ? checkbox.checked : false,
-            todo.time = timeSpan ? timeSpan.textContent : '',
+            todo.text = textSpan.textContent;
+            todo.isCompleted = checkbox
+                ? checkbox.checked
+                : false;
+            todo.time = timeSpan
+                ? timeSpan.textContent
+                : '';
             todo.date = dateText;
 
         }
@@ -345,6 +357,8 @@ function saveAllTodos(){
 
     // 全タスクを保存
     localStorage.setItem('todos',JSON.stringify(todos));
+
+    console.log('編集内容を保存しました');
 
     // ウィジェットへ通知
     window.electronAPI.notifyTodoChanged();

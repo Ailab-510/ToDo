@@ -23,7 +23,12 @@
   "build": {
     "appId": "com.todo.app",
     "productName": "Todo",
-    "win": {"target": "nsis"}
+    "mac": {
+      "target":"dmg"
+    },
+    "win": {
+      "target": "nsis"
+    }
   },
   "devDependencies": {
     "electron": "^43.4.0",

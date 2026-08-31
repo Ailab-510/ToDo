@@ -83,7 +83,7 @@ function createWidgetWindow() {
 app.whenReady().then(async () => {
 
     // Mac起動時にElectronを自動起動
-    if (process.platform === 'darwin'){
+    if (process.platform === 'darwin' || process.platform === 'win32') {
 
         app.setLoginItemSettings({
             openAtLogin: true,

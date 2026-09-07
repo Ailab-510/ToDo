@@ -194,6 +194,18 @@ ipcMain.on('open-main-window', () => {
 
 });
 
+// ウィジェットを閉じる
+ipcMain.on('close-widget', () => {
+
+    console.log('main.js: close-widgetを受信');
+
+    if (!widgetWindow) {
+        return;
+    }
+
+    widgetWindow.close();
+});
+
 // LocalStorageからタスクを取得
 async function getTodos() {
 
@@ -245,8 +257,8 @@ ipcMain.on('resize-widget', (event, width, height) => {
     }
 
     // 最小サイズ
-    const minWidth = 200;
-    const minHeight = 150;
+    const minWidth = 120;
+    const minHeight = 100;
 
     // 最大サイズ
     const maxWidth = 600;

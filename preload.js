@@ -43,6 +43,11 @@ contextBridge.exposeInMainWorld('electronAPI',{
         ipcRenderer.send('resize-widget', width, height);
     },
 
+    // ウィジェットを閉じる
+    closeWidget: () => {
+        ipcRenderer.send('close-widget');
+    },
+
     // 本体のタスク変更をウィジェットへ通知
     notifyTodoChanged: () => {
 

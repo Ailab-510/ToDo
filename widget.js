@@ -4,6 +4,11 @@ const widget = document.getElementById('widget');
 const dragBar = document.getElementById('drag-bar');
 const resizeHandle = document.getElementById('resize-handle');
 
+// メニュー関連
+const menuButton = document.getElementById('menu-button');
+const widgetMenu = document.getElementById('widget-menu');
+const closeWidgetButton = document.getElementById('close-widget-button');
+
 // ウィジェットの空白部分をクリック
 widget.addEventListener('click', (event) => {
 
@@ -14,6 +19,16 @@ widget.addEventListener('click', (event) => {
 
     // サイズ変更部分は何もしない
     if (event.target.closest('#resize-handle')){
+        return;
+    }
+
+    // メニューボタンは何もしない
+    if (event.target.closest('#menu-button')) {
+        return;
+    }
+
+    // メニュー部分は何もしない
+    if (event.target.closest('#widget-menu')) {
         return;
     }
 
@@ -167,5 +182,32 @@ loadTodayTodos();
 window.electronAPI.onTodoChanged(() => {
     console.log('タスク変更通知を受領しました')
     loadTodayTodos();
+
+});
+
+// 「⋯」をクリック
+menuButton.addEventListener('click', (event) => {
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    widgetMenu.classList.toggle('show');
+
+});
+
+// 「ウィジェットを閉じる」をクリック
+closeWidgetButton.addEventListener('click', (event) => {
+
+    event.preventDefault();
+    event.stopPropagation();
+    
+    window.electronAPI.closeWidget();
+
+});
+
+// ウィジェット以外をクリックしたらメニューを閉じる
+document.addEventListener('click', () => {
+
+    widgetMenu.classList.remove('show');
 
 });

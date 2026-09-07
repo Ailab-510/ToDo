@@ -24,8 +24,11 @@ function createMainWindow() {
     mainWindow.loadFile('index.html');
 
     //　本体を閉じた時
-    mainWindow.on('closed', () => {
-        mainWindow = null;
+    mainWindow.on('close', (event) => {
+
+        event.preventDefault();
+        mainWindow.hide();
+
     });
 }
 
@@ -130,25 +133,51 @@ ipcMain.handle('get-today-todos', async () => {
     return todayTodos;
 });
 
-//　タスクを完了する
+// タスクを完了する
 ipcMain.handle('complete-todo', async (event, taskId) => {
 
     if (!mainWindow) {
+        console.error('mainWindowがありません');
         return false;
     }
 
-    // 本体側の関数を実行してタスクを完了にする
-    await mainWindow.webContents.executeJavaScript(`
-        updateTodoStatus(${JSON.stringify(taskId)}, true);
-        filterTodos('all');
-    `);
+    try {
 
-    // ウィジェットを更新
-    if (widgetWindow) {
-        widgetWindow.webContents.send('todo-changed');
+        console.log('タスク完了処理開始:', taskId);
+
+        const result = await mainWindow.webContents.executeJavaScript(`
+            (() => {
+
+                console.log('executeJavaScript開始');
+                console.log('taskId:', ${JSON.stringify(taskId)});
+
+                updateTodoStatus(${JSON.stringify(taskId)}, true);
+
+                console.log('updateTodoStatus完了');
+
+                filterTodos('all');
+
+                console.log('filterTodos完了');
+
+                return true;
+
+            })();
+        `);
+
+        console.log('complete-todo result:', result);
+
+        if (widgetWindow) {
+            widgetWindow.webContents.send('todo-changed');
+        }
+
+        return true;
+
+    } catch (error) {
+
+        console.error('complete-todoでエラー:', error);
+
+        return false;
     }
-
-    return true;
 });
 
 // 本体のタスク変更をウィジェットへ通知

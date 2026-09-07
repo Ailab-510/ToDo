@@ -1,0 +1,190 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Mochiy Pop One', sans-serif;
+    background: transparent;
+    overflow: hidden;
+
+    width: 100vw;
+    height: 100vh;
+}
+
+#widget {
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+
+    position: relative;
+
+    background-image: url('img/Widget background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+
+    overflow: hidden;
+}
+
+#widget-todo-list {
+    width: 100%;
+    height: calc(100% - 10px);
+    max-height: none;
+
+    list-style: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#widget-todo-list li {
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    min-width: 0;
+
+    gap: 8px;
+
+    padding: 10px 6px;
+    margin-bottom: 6px;
+
+    border-radius: 8px;
+    background: #f8f9fb;
+
+    font-size: 13px;
+    color: #1e293b;
+
+}
+
+#widget-todo-list li:hover {
+    background: #f1f3f5;
+}
+
+#widget-todo-list input[type="checkbox"] {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    cursor: pointer;
+}
+
+.widget-task-text {
+    flex: 1;
+    min-width: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#widget-todo-list::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+}
+
+#widget-todo-list li:hover {
+    background: #f1f3f5;
+}
+
+#drag-bar {
+    width: 100%;
+    height: 10px;
+
+    -webkit-app-region: drag;
+    cursor: move;
+}
+
+#resize-handle {
+    position: absolute;
+
+    right: 0;
+    bottom: 0;
+
+    width: 18px;
+    height: 18px;
+
+    cursor: nwse-resize;
+}
+
+/* メニューボタン */
+#menu-button {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+
+    width: 32px;
+    height: 32px;
+
+    border: none;
+    background: transparent;
+    
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 28px;
+
+    cursor: pointer;
+
+    z-index: 10000;
+    pointer-events: auto;
+}
+
+/* マウスを乗せた時 */
+#menu-button:hover {
+    opacity: 0.6;
+}
+
+/* メニュー */
+#widget-menu {
+    display: none;
+    
+    position: absolute;
+    top: 60px;
+    right: 8px;
+
+    background: white;
+    border-radius: 8px;
+
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+
+    padding: 5px;
+
+    z-index: 9999;
+    pointer-events: auto;
+}
+
+/*　メニュー表示時 */
+#widget-menu.show {
+    display: block;
+}
+
+/* ウィジェットを閉じるボタン */
+#close-widget-button {
+    border: none;
+    background: transparent;
+    padding: 8px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#close-widget-button:hover {
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+
+/* メニューを最前面にする */
+#widget-menu {
+    z-index: 9999;
+    pointer-events: auto;
+}
+
+/* 閉じるボタンをクリック可能にする */
+#close-widget-button {
+    position: relative;
+    z-index: 10000;
+    pointer-events: auto;
+    cursor: pointer;
+}

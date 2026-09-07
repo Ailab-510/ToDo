@@ -2,6 +2,7 @@
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
 const todoDate = document.getElementById('todo-date');
+const addTodoBtn = document.getElementById('add-todo-btn');
 
 //　今どのメニューが開かれているかを覚えておくための変数
 let currentFilter = 'all';
@@ -10,7 +11,7 @@ let currentFilter = 'all';
 window.addEventListener('DOMContentLoaded',loadTodos);
 
 //　タスクを追加する処理の本体
-function executeAddTask(){
+function excuteAddTask(){
     const taskText = todoInput.value.trim();
     if(taskText === '')return;
 
@@ -30,6 +31,8 @@ function executeAddTask(){
 
     createTodoElement(newTodo, 'all');
     saveTodo(newTodo);
+
+    window.electronAPI.notifyTodoChanged();
 
     todoDate.blur();
     todoInput.value = ''; // 入力欄をクリア
@@ -52,9 +55,17 @@ todoDate.addEventListener('keyup',(event) => {
     excuteAddTask();
 });
 
+// 確定ボタンをクリックした時の処理
+addTodoBtn.addEventListener('click', () => {
+    excuteAddTask();
+});
+
+
 // 💡 3. タスクを画面に作る関数
 function createTodoElement(todoObj, filterType = 'all') {
     const li = document.createElement('li');
+
+    li.dataset.id = todoObj.id;
 
     // 左側のコンテンツ（チェックボックス＋文字）を入れる親要素
     const taskContent = document.createElement('div');
@@ -182,15 +193,14 @@ function saveTodo(todoObj) {
 // 読み込み
 function loadTodos() {
     filterTodos('all');
-    let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
-    todos.forEach(todoObj => createTodoElement(todoObj,'all'));
 }
 
 // 状態（チェックの有無）の更新
 function updateTodoStatus(taskId, isCompleted) {
     let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
     todos = todos.map(todo => {
-        if (todo.text === taskId) {
+
+        if (Number(todo.id) === Number(taskId)) {
             todo.isCompleted = isCompleted;
         }
 
@@ -198,6 +208,11 @@ function updateTodoStatus(taskId, isCompleted) {
     });
     
     localStorage.setItem('todos', JSON.stringify(todos));
+
+    console.log('タスク完了状態を更新:', taskId, isCompleted);
+
+    window.electronAPI.notifyTodoChanged();
+    
 }
 
 // 削除
@@ -205,6 +220,9 @@ function deleteTodo(taskId) {
     let todos = localStorage.getItem('todos') ? JSON.parse(localStorage.getItem('todos')) : [];
     todos = todos.filter(todo => todo.id !== taskId);
     localStorage.setItem('todos', JSON.stringify(todos));
+
+    window.electronAPI.notifyTodoChanged();
+
 }
 
 //全削除ボタン
@@ -293,25 +311,56 @@ function clearCompletedTodos(){
 }
 
 function saveAllTodos(){
-    const todos = [];
+
+    // 現在保存されている全タスクを取得
+    let todos = localStorage.getItem('todos')
+        ? JSON.parse(localStorage.getItem('todos'))
+        : [];
+
     const liElements = todoList.querySelectorAll('li');
 
     liElements.forEach(li => {
+
+        const taskId = li.dataset.id;
+
         const textSpan = li.querySelector('.task-content span');
         const checkbox = li.querySelector('input[type="checkbox"]');
         const timeSpan = li.querySelector('.task-time');
         const dateSpan = li.querySelector('.todo-date');
 
-        if(textSpan){
-            const dateText = dateSpan ? dateSpan.textContent.replace('〆: ','') : '期限なし';
+        if(!textSpan || !taskId) {
+            return;
+        }
 
-            todos.push({
-                text: textSpan.textContent,
-                isCompleted: checkbox ? checkbox.checked : false,
-                time: timeSpan ? timeSpan.textContent : '',
-                date: dateText
-            });
+        const dateText = dateSpan
+            ? dateSpan.textContent.replace('〆: ','')
+            : '期限なし';
+
+            // 既存タスクをIDで探す
+        const todo = todos.find(todo => 
+            Number(todo.id) === Number(taskId)
+        );
+
+        if (todo) {
+
+            todo.text = textSpan.textContent;
+            todo.isCompleted = checkbox
+                ? checkbox.checked
+                : false;
+            todo.time = timeSpan
+                ? timeSpan.textContent
+                : '';
+            todo.date = dateText;
+
         }
     });
+
+    // 全タスクを保存
     localStorage.setItem('todos',JSON.stringify(todos));
+
+    console.log('編集内容を保存しました');
+
+    // ウィジェットへ通知
+    window.electronAPI.notifyTodoChanged();
+
 }

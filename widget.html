@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日やること</title>
+    <link rel="stylesheet" href="widget.css">
+</head>
+
+<body>
+
+    <div id="widget">
+        <!-- ドラッグ用バー -->
+        <div id="drag-bar"></div>
+
+        <!-- メニューボタン -->
+        <button id="menu-button">⋯</button>
+
+        <!-- メニュー　-->
+        <div id="widget-menu">
+            <button id="close-widget-button">
+                ウィジェットを閉じる
+            </button>
+        </div>
+
+        <!-- 今日のタスク -->
+        <ul id ="widget-todo-list"></ul>
+
+        <!-- サイズ変更用 -->
+        <div id="resize-handle"></div>
+
+    </div>
+
+    <script src="widget.js"></script>
+
+</body>
+</html>

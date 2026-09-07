@@ -1,0 +1,39 @@
+{
+  "name": "todo",
+  "version": "1.0.1",
+  "description": "シンプルなTodoアプリ",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win --x64"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://Ailab-510/ToDo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Ailab-510/ToDo/issues"
+  },
+  "homepage": "https://github.com/Ailab-510/ToDo#readme",
+  "build": {
+    "appId": "com.todo.app",
+    "productName": "Todo",
+    "mac": {
+      "target":"dmg",
+      "icon": "icon.icns"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon.ico"
+    }
+  },
+  "devDependencies": {
+    "electron": "^43.4.0",
+    "electron-builder": "^26.15.3"
+  }
+}

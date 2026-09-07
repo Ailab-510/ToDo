@@ -60,6 +60,21 @@ async function loadTodayTodos() {
         // データ取得後に一度だけリストをクリア
         widgetTodoList.innerHTML = '';
 
+        // 今日のタスクがない場合
+        if (todayTodos.length === 0) {
+
+            const li = document.createElement('li');
+
+            li.textContent = '今日のタスクはありません';
+
+            li.style.justifyContent = 'center';
+            li.style.color  = '#666';
+
+            widgetTodoList.appendChild(li);
+
+            return;
+        }
+
         // タスクを表示
         todayTodos.forEach(todo => {
 

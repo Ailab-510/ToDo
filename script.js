@@ -228,7 +228,9 @@ function deleteTodo(taskId) {
 //全削除ボタン
 const clearCompletedBtn = document.getElementById('clear-completed-btn');
 
-clearCompletedBtn.addEventListener('click', clearCompletedTodos);
+if (clearCompletedBtn) {
+    clearCompletedBtn.onclick = clearCompletedTodos;
+}
 
 // メニュー切り替え機能
 const menuAll = document.getElementById('menuAll');

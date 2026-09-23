@@ -114,6 +114,17 @@ app.whenReady().then(async () => {
 
 });
 
+// MacのDockからアプリをクリックしたとき
+app.on('active', () => {
+    if (!mainWindow){
+        createMainWindow();
+        return;
+    }
+
+    mainWindow.show();
+    mainWindow.focus();
+});
+
 // 今日のタスクを取得
 ipcMain.handle('get-today-todos', async () => {
 

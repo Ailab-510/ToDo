@@ -135,29 +135,31 @@ let resizeStartWidth = 250;
 let resizeStartHeight = 250;
 
 // サイズ変更開始
-resizeHandle.addEventListener('mousedown', async (event) => {
+// pointerdown + setPointerCapture でウィンドウ外でもイベントを受け取る
+resizeHandle.addEventListener('pointerdown', async (event) => {
 
     if (event.button !== 0) {
         return;
     }
 
     event.preventDefault();
-    event.stopPropagation();
 
-    isResizing = true;
+    // マウスをこの要素に「捕まえる」（ウィンドウ外でも追跡できるようになる）
+    resizeHandle.setPointerCapture(event.pointerId);
 
     resizeStartMouseX = event.screenX;
     resizeStartMouseY = event.screenY;
 
     const size = await window.electronAPI.getWidgetSize();
+    resizeStartWidth = size.width;
+    resizeStartHeight = size.height;
 
-        resizeStartWidth = size.width;
-        resizeStartHeight = size.height;
+    isResizing = true;
 
 });
 
-// マウス移動
-document.addEventListener('mousemove', (event) => {
+// マウス移動（ウィンドウ外でも動作する）
+resizeHandle.addEventListener('pointermove', (event) => {
 
     if (!isResizing) {
         return;
@@ -169,26 +171,25 @@ document.addEventListener('mousemove', (event) => {
     const newWidth = resizeStartWidth + moveX;
     const newHeight = resizeStartHeight + moveY;
 
-
-    window.electronAPI.resizeWidget(
-        newWidth,
-        newHeight
-    );
+    window.electronAPI.resizeWidget(newWidth, newHeight);
 
 });
 
 // マウスを離した
-document.addEventListener('mouseup', (event) => {
+resizeHandle.addEventListener('pointerup', (event) => {
 
-    if(!isResizing) {
+    if (!isResizing) {
         return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
-
+    resizeHandle.releasePointerCapture(event.pointerId);
     isResizing = false;
 
+});
+
+// 何らかの理由でキャプチャが切れた時
+resizeHandle.addEventListener('pointercancel', () => {
+    isResizing = false;
 });
 
 // ウィジェット起動

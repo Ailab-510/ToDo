@@ -64,6 +64,15 @@ function createWidgetWindow() {
     
    widgetWindow.loadFile('widget/widget.html');
 
+   // ウィジェットの読み込みが完了したらタスクを強制再取得
+   widgetWindow.webContents.once('did-finish-load', () => {
+       setTimeout(() => {
+           if (widgetWindow && !widgetWindow.isDestroyed()) {
+               widgetWindow.webContents.send('todo-changed');
+           }
+       }, 500);
+   });
+
    // ウィジェットを移動した時
     widgetWindow.on('move', () => {
 

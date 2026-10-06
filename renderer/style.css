@@ -9,7 +9,7 @@ body {
     font-family: 'Mochiy Pop One', sans-serif;
     background-color: #f0f2f5;
     display: flex;
-    height: 100vh; 
+    height: 100vh;
     width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
@@ -24,12 +24,12 @@ body {
     flex-direction: column;
     justify-content: space-between;
 
-    background-image: url('img/43026c9f91109d0997169bfc54f2a89d.jpg');
+    background-image: url('../assets/img/43026c9f91109d0997169bfc54f2a89d.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 
-    background-color: #b93a93; 
+    background-color: #b93a93;
 }
 
 .sidebar h1 {
@@ -62,13 +62,13 @@ body {
     }
 
 .sidebar-menu li.active {
-    background-color: #f538bc; /* 青色のアクセント */
+    background-color: #f538bc;
     font-weight: bold;
 }
 
 /* ── 右側のメインコンテンツエリア ── */
 .main-content {
-    flex: 1; /* 残りの横幅をすべて使う */
+    flex: 1;
     padding: 40px;
     display: flex;
     flex-direction: column;
@@ -111,19 +111,24 @@ body {
 
 /* 確定ボタン */
 #add-todo-btn {
-    padding: 10px 18px;
+    padding: 0 24px;
     background-color: #f538bc;
     color: white;
     border: none;
-    border-radius: 7px;
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 14px;
     font-weight: bold;
+    font-size: 16px;
+    transition: background 0.2s;
     white-space: nowrap;
 }
 
 #add-todo-btn:hover {
     background-color: #db059b;
+}
+
+#add-todo-btn:active {
+    transform: scale(0.98);
 }
 
 input {
@@ -139,26 +144,10 @@ input:focus {
     border-color: #f538bc;
 }
 
-#add-btn {
-    padding: 0 24px;
-    background-color: #f538bc;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
-    transition: background 0.2s;
-}
-
-#add-btn:hover {
-    background-color: #f538bc;
-}
-
 /* ── スクロール可能なタスク一覧エリア ── */
 .todo-wrapper {
     flex: 1;
-    overflow-y: auto; /* タスクが増えたらここだけスクロールさせる */
+    overflow-y: auto;
     padding-right: 10px;
 }
 
@@ -168,14 +157,14 @@ input:focus {
 
 #todo-list li {
     background: white;
-    padding: 0 16px 0 0px; /*上・右・下・左*/
+    padding: 0 16px 0 0px;
     margin-bottom: 12px;
     border-radius: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-    border-left: 4px solid #cbd5e1; /* 左端に薄いグレーの線 */
+    border-left: 4px solid #cbd5e1;
     transition: all 0.2s;
 }
 
@@ -197,7 +186,7 @@ input:focus {
 span{
     font-size: 16px;
     color: #1e293b;
-    text-align: left; 
+    text-align: left;
 }
 
 /* チェックボックスの見た目を少し大きく */
@@ -261,13 +250,13 @@ input[type="checkbox"] {
     color:white;
     border:none;
     border-radius:20px;
-    box-shadow:0 4px 12px rgba(0,0,0,0,1);
+    box-shadow:0 4px 12px rgba(0,0,0,0.1);
     cursor:pointer;
     font-size:14px;
     font-weight:bold;
     transition: all 0.2s ease;
 
-    display: none; /*普段は完全非表示*/
+    display: none;
 }
 
 .clear-btn:hover{
@@ -276,13 +265,13 @@ input[type="checkbox"] {
     transform: scale(1.05);
 }
 
-body:has(#menuCompleted.active).clear-btn{
+body:has(#menuCompleted.active) .clear-btn{
     display: block;
 }
 
 body:has(#clear-completed-btn:not([style*="display: none"])) span {
     text-decoration: none !important;
-    text-decoration-line: none !important; 
+    text-decoration-line: none !important;
 }
 
 #todo-list .task-content{
@@ -350,28 +339,6 @@ body:has(#clear-completed-btn:not([style*="display: none"])) span {
     padding-right: 15px;
 }
 
-/* タスク確定ボタン */
-#add-todo-btn{
-    padding: 0 24px;
-    background-color: #f538bc;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
-    transition: background 0.2s;
-    white-space: nowrap;
-}
-
-#add-todo-btn:hover{
-    background-color: #db059b;
-}
-
-#add-todo-btn:active{
-    transform: scale(0.98);
-}
-
 /** タスクリストの項目名 **/
 .todo-header {
     display: flex;
@@ -379,7 +346,7 @@ body:has(#clear-completed-btn:not([style*="display: none"])) span {
     padding: 0 16px 8px 14px;
     color: #64748b;
     font-size: 13px;
-    font-weight: hold;
+    font-weight: bold;
 }
 
 /* タスク */

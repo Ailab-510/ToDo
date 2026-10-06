@@ -1,7 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const { resolve } = require('dns');
 
 let mainWindow;
 let widgetWindow;
@@ -21,7 +20,7 @@ function createMainWindow() {
         }
     });
     
-    mainWindow.loadFile('index.html');
+    mainWindow.loadFile('renderer/index.html');
 
     //　本体を閉じた時
     mainWindow.on('close', (event) => {
@@ -63,7 +62,7 @@ function createWidgetWindow() {
         );
     }
     
-   widgetWindow.loadFile('widget.html');
+   widgetWindow.loadFile('widget/widget.html');
 
    // ウィジェットを移動した時
     widgetWindow.on('move', () => {
@@ -114,15 +113,51 @@ app.whenReady().then(async () => {
 
 });
 
+// アプリが二重起動するのを防ぐ
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+    app.quit();
+} else {
+    app.on('second-instance', () => {
+        if (!mainWindow) return;
+
+        if (mainWindow.isMinimized()) {
+            mainWindow.restore();
+        }
+
+        mainWindow.show();
+        mainWindow.focus();
+
+        // ウィジェットが閉じられていたら再表示
+        if (!widgetWindow || widgetWindow.isDestroyed()) {
+            createWidgetWindow();
+        } else {
+            widgetWindow.show();
+        }
+
+    });
+}
+
 // MacのDockからアプリをクリックしたとき
-app.on('active', () => {
+app.on('activate', () => {
     if (!mainWindow){
         createMainWindow();
-        return;
+    }
+
+    if (mainWindow.isMinimized()){
+        mainWindow.restore();
     }
 
     mainWindow.show();
     mainWindow.focus();
+
+    // ウィジェットが閉じられていたら再表示
+    if (!widgetWindow || widgetWindow.isDestroyed()) {
+        createWidgetWindow();
+    } else {
+        widgetWindow.show();
+    }
 });
 
 // 今日のタスクを取得

@@ -153,7 +153,7 @@ resizeHandle.addEventListener('mousedown', async (event) => {
 
         resizeStartWidth = size.width;
         resizeStartHeight = size.height;
-    
+
 });
 
 // マウス移動
@@ -215,7 +215,7 @@ closeWidgetButton.addEventListener('click', (event) => {
 
     event.preventDefault();
     event.stopPropagation();
-    
+
     window.electronAPI.closeWidget();
 
 });

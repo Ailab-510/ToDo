@@ -17,23 +17,12 @@ contextBridge.exposeInMainWorld('electronAPI',{
         ipcRenderer.send('open-main-window');
     },
 
-    // ウィジェットを移動
-    moveWidget: (x, y) => {
-        ipcRenderer.send('move-widget', x, y);
-    },
-
     // ウィジェットの現在位置を取得
     getWidgetPosition: () => {
         return ipcRenderer.invoke('get-widget-position');
     },
 
-    // ウィジェット位置を保存
-    saveWidgetPosition: (x, y) => {
-        ipcRenderer.send('save-widget-position', x, y);
-    },
-
-    // ウィジェットサイズ
-    // ウィジェットの現在のサイズを取得
+    // ウィジェットサイズの現在値を取得
     getWidgetSize: () => {
         return ipcRenderer.invoke('get-widget-size');
     },
@@ -52,7 +41,7 @@ contextBridge.exposeInMainWorld('electronAPI',{
     notifyTodoChanged: () => {
 
         console.log('preload: todo-changedを送信');
-        
+
         ipcRenderer.send('todo-changed');
     },
 

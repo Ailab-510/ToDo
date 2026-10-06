@@ -25,6 +25,12 @@ function createMainWindow() {
     //　本体を閉じた時
     mainWindow.on('close', (event) => {
 
+        // Windowsは閉じたら終了、Macは隠すだけ
+        if (process.platform === 'win32') {
+            app.quit();
+            return;
+        }
+
         event.preventDefault();
         mainWindow.hide();
 

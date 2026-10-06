@@ -2,6 +2,15 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 作業スタイル
+
+コードを変更する前に、必ず以下を説明すること：
+- 何が問題なのか（原因）
+- どのファイルのどの部分を変更するか
+- なぜその方法で修正するか
+
+説明が終わってからコードに反映すること。
+
 ## Commands
 
 ```bash

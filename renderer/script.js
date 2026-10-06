@@ -29,7 +29,7 @@ function excuteAddTask(){
         date: deadline
     };
 
-    createTodoElement(newTodo, 'all');
+    createTodoElement(newTodo);
     saveTodo(newTodo);
 
     window.electronAPI.notifyTodoChanged();
@@ -62,7 +62,7 @@ addTodoBtn.addEventListener('click', () => {
 
 
 // 💡 3. タスクを画面に作る関数
-function createTodoElement(todoObj, filterType = 'all') {
+function createTodoElement(todoObj) {
     const li = document.createElement('li');
 
     li.dataset.id = todoObj.id;
@@ -105,7 +105,7 @@ function createTodoElement(todoObj, filterType = 'all') {
 
          setTimeout(() => {
             filterTodos(currentFilter);
-        },200);    
+        },200);
     });
 
     // 編集ボタンを作る
@@ -154,7 +154,7 @@ function createTodoElement(todoObj, filterType = 'all') {
     const deleteBtn = document.createElement('button');
     deleteBtn.textContent = '削除';
     deleteBtn.classList.add('delete-btn');
-    
+
     deleteBtn.addEventListener('click', () => {
         li.remove();
         deleteTodo(todoObj.id);
@@ -206,13 +206,13 @@ function updateTodoStatus(taskId, isCompleted) {
 
         return todo;
     });
-    
+
     localStorage.setItem('todos', JSON.stringify(todos));
 
     console.log('タスク完了状態を更新:', taskId, isCompleted);
 
     window.electronAPI.notifyTodoChanged();
-    
+
 }
 
 // 削除
@@ -273,7 +273,7 @@ function filterTodos(filterType){
         } else if (filterType === 'active' && !todoObj.isCompleted){
             createTodoElement(todoObj);
         } else if (filterType === 'completed' && todoObj.isCompleted){
-            createTodoElement(todoObj,filterType);
+            createTodoElement(todoObj);
         }
     });
 
@@ -339,7 +339,7 @@ function saveAllTodos(){
             : '期限なし';
 
             // 既存タスクをIDで探す
-        const todo = todos.find(todo => 
+        const todo = todos.find(todo =>
             Number(todo.id) === Number(taskId)
         );
 

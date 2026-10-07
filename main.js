@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -24,6 +24,12 @@ function createMainWindow() {
 
     //　本体を閉じた時
     mainWindow.on('close', (event) => {
+
+        // Windowsは閉じたら終了、Macは隠すだけ
+        if (process.platform === 'win32') {
+            app.quit();
+            return;
+        }
 
         event.preventDefault();
         mainWindow.hide();
@@ -63,6 +69,15 @@ function createWidgetWindow() {
     }
     
    widgetWindow.loadFile('widget/widget.html');
+
+   // ウィジェットの読み込みが完了したらタスクを強制再取得
+   widgetWindow.webContents.once('did-finish-load', () => {
+       setTimeout(() => {
+           if (widgetWindow && !widgetWindow.isDestroyed()) {
+               widgetWindow.webContents.send('todo-changed');
+           }
+       }, 500);
+   });
 
    // ウィジェットを移動した時
     widgetWindow.on('move', () => {
@@ -110,6 +125,13 @@ app.whenReady().then(async () => {
 
     // Mac起動時はウィジェットのみ表示
     createWidgetWindow();
+
+    // スリープから復帰した時にウィジェットを更新
+    powerMonitor.on('resume', () => {
+        if (widgetWindow && !widgetWindow.isDestroyed()) {
+            widgetWindow.webContents.send('todo-changed');
+        }
+    });
 
 });
 

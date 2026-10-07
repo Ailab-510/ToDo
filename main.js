@@ -1,9 +1,11 @@
-const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron');
+const { app, BrowserWindow, ipcMain, powerMonitor, Tray, Menu } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
 let mainWindow;
 let widgetWindow;
+let tray = null;
+let isQuitting = false;
 
 // Todo本体のウィンドウ
 
@@ -25,16 +27,74 @@ function createMainWindow() {
     //　本体を閉じた時
     mainWindow.on('close', (event) => {
 
-        // Windowsは閉じたら終了、Macは隠すだけ
-        if (process.platform === 'win32') {
-            app.quit();
-            return;
-        }
+        // 終了フラグが立っている場合はそのまま閉じる
+        if (isQuitting) return;
 
+        // Windowsは閉じたら隠すだけ（トレイから再表示できる）
+        // Macも隠すだけ
         event.preventDefault();
         mainWindow.hide();
 
     });
+}
+
+// システムトレイアイコン
+function createTray() {
+    const iconPath = path.join(__dirname, 'icon.png');
+    tray = new Tray(iconPath);
+    tray.setToolTip('Todo');
+
+    updateTrayMenu();
+
+    // Windowsはアイコンクリックでウィジェットをトグル
+    tray.on('click', () => {
+        if (process.platform !== 'darwin') {
+            toggleWidget();
+        }
+    });
+}
+
+function updateTrayMenu() {
+    if (!tray) return;
+
+    const widgetVisible = widgetWindow && !widgetWindow.isDestroyed() && widgetWindow.isVisible();
+
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: widgetVisible ? 'ウィジェットを非表示' : 'ウィジェットを表示',
+            click: () => toggleWidget()
+        },
+        {
+            label: '本体を開く',
+            click: () => {
+                if (mainWindow) {
+                    mainWindow.show();
+                    mainWindow.focus();
+                }
+            }
+        },
+        { type: 'separator' },
+        {
+            label: '終了',
+            click: () => {
+                isQuitting = true;
+                app.quit();
+            }
+        }
+    ]);
+
+    tray.setContextMenu(contextMenu);
+}
+
+function toggleWidget() {
+    if (!widgetWindow || widgetWindow.isDestroyed()) {
+        createWidgetWindow();
+    } else if (widgetWindow.isVisible()) {
+        widgetWindow.hide();
+    } else {
+        widgetWindow.show();
+    }
+    updateTrayMenu();
 }
 
 // デスクトップウィジェット
@@ -93,6 +153,7 @@ function createWidgetWindow() {
     //　ウィジェットを閉じた時
     widgetWindow.on('closed', () => {
         widgetWindow = null;
+        updateTrayMenu();
     });
 }
 
@@ -126,6 +187,9 @@ app.whenReady().then(async () => {
     // Mac起動時はウィジェットのみ表示
     createWidgetWindow();
 
+    // システムトレイアイコンを作成
+    createTray();
+
     // スリープから復帰した時にウィジェットを更新
     powerMonitor.on('resume', () => {
         if (widgetWindow && !widgetWindow.isDestroyed()) {
@@ -133,6 +197,11 @@ app.whenReady().then(async () => {
         }
     });
 
+});
+
+// OSのシャットダウン/再起動時に正常終了できるようにする
+app.on('before-quit', () => {
+    isQuitting = true;
 });
 
 // アプリが二重起動するのを防ぐ

@@ -1,8 +1,6 @@
 // 画面の要素を取得
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
-const todoStartDate = document.getElementById('todo-start-date');
-const todoDate = document.getElementById('todo-date');
 const addTodoBtn = document.getElementById('add-todo-btn');
 
 //　今どのメニューが開かれているかを覚えておくための変数
@@ -16,8 +14,9 @@ function excuteAddTask(){
     const taskText = todoInput.value.trim();
     if(taskText === '')return;
 
-    const startDate = todoStartDate.value ? todoStartDate.value : null;
-    const deadline = todoDate.value ? todoDate.value : '期限なし';
+    // カレンダーから日付を取得
+    const startDate = window.calendarPicker.getStartDate();
+    const deadline  = window.calendarPicker.getEndDate() || '期限なし';
 
     const now = new Date();
     const timeText = `${now.getMonth() + 1}/${now.getDate()} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
@@ -37,11 +36,8 @@ function excuteAddTask(){
 
     window.electronAPI.notifyTodoChanged();
 
-    todoStartDate.blur();
-    todoDate.blur();
+    window.calendarPicker.clear();
     todoInput.value = '';
-    todoStartDate.value = '';
-    todoDate.value = '';
     todoInput.focus();
 }
 
@@ -50,13 +46,6 @@ todoInput.addEventListener('keydown',(event) => {
     if (event.isComposing) return;
     if (event.key !== 'Enter') return;
     event.preventDefault();
-    excuteAddTask();
-});
-
-//　期限入力欄でのEnterキーの処理
-todoDate.addEventListener('keyup',(event) => {
-    if (event.isComposing) return;
-    if (event.key !== 'Enter') return;
     excuteAddTask();
 });
 

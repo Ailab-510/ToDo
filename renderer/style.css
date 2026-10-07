@@ -98,19 +98,7 @@ body {
     outline: none;
 }
 
-/* 期限入力欄（開始日・終了日共通） */
-#todo-start-date,
-#todo-date {
-    width: 150px;
-    flex: none;
-    padding: 10px 10px;
-    border: 1px solid #e2e8f0;
-    border-radius: 7px;
-    font-size: 14px;
-    outline: none;
-}
-
-/* 〜 区切り */
+/* 〜 区切り（編集モード用） */
 .date-separator {
     font-size: 14px;
     color: #64748b;
@@ -122,6 +110,158 @@ body {
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+/* ── カレンダー日付ピッカー ────────────────── */
+
+.date-picker-wrapper {
+    position: relative;
+    flex-shrink: 0;
+}
+
+/* 日付ボタン（入力欄風） */
+.date-picker-btn {
+    padding: 10px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 7px;
+    background: white;
+    font-size: 14px;
+    color: #64748b;
+    cursor: pointer;
+    white-space: nowrap;
+    min-width: 130px;
+    text-align: left;
+    transition: border-color 0.2s;
+}
+
+.date-picker-btn:hover {
+    border-color: #f538bc;
+}
+
+/* ポップアップ本体 */
+.date-picker-popup {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    z-index: 1000;
+
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    padding: 16px;
+    width: 280px;
+}
+
+.date-picker-popup.hidden {
+    display: none;
+}
+
+/* 月ナビゲーション行 */
+.cal-nav-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    color: #1e293b;
+}
+
+.cal-nav {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #64748b;
+    padding: 2px 8px;
+    border-radius: 6px;
+    line-height: 1;
+}
+
+.cal-nav:hover {
+    background: #f0f2f5;
+}
+
+/* 7列グリッド */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 2px;
+}
+
+/* 曜日ヘッダー */
+.cal-weekday {
+    text-align: center;
+    font-size: 11px;
+    color: #94a3b8;
+    padding: 4px 0 6px;
+}
+
+/* 日付セル */
+.cal-day {
+    text-align: center;
+    padding: 6px 0;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    color: #1e293b;
+    transition: background 0.1s;
+}
+
+.cal-day:hover {
+    background: #f0f2f5;
+}
+
+/* 今日 */
+.cal-day.is-today {
+    font-weight: bold;
+    color: #f538bc;
+}
+
+/* 開始日・終了日 */
+.cal-day.range-start,
+.cal-day.range-end {
+    background: #f538bc;
+    color: white;
+    font-weight: bold;
+}
+
+/* 範囲内 */
+.cal-day.in-range {
+    background: #fce4f5;
+    border-radius: 0;
+    color: #1e293b;
+}
+
+/* 開始日の右端・終了日の左端を丸くする */
+.cal-day.range-start { border-radius: 6px 0 0 6px; }
+.cal-day.range-end   { border-radius: 0 6px 6px 0; }
+
+/* 1日だけ選択の場合は両側丸く */
+.cal-day.range-start.range-end {
+    border-radius: 6px;
+}
+
+/* フッター */
+.cal-footer {
+    margin-top: 10px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.cal-clear-btn {
+    background: none;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    color: #64748b;
+    cursor: pointer;
+}
+
+.cal-clear-btn:hover {
+    background: #f0f2f5;
 }
 
 /* 確定ボタン */

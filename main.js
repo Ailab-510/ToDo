@@ -193,7 +193,15 @@ ipcMain.handle('get-today-todos', async () => {
     console.log('取得したタスク:',todos);
 
     const todayTodos = todos.filter(todo => {
-        return todo.date === today && !todo.isCompleted;
+        if (todo.isCompleted) return false;
+
+        // 開始日と終了日の両方ある場合：今日が範囲内かチェック
+        if (todo.startDate && todo.date && todo.date !== '期限なし') {
+            return todo.startDate <= today && today <= todo.date;
+        }
+
+        // 終了日のみの場合：今日と一致するかチェック
+        return todo.date === today;
     });
 
     console.log('今日のタスク:', todayTodos);

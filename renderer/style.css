@@ -98,7 +98,8 @@ body {
     outline: none;
 }
 
-/* 期限入力欄 */
+/* 期限入力欄（開始日・終了日共通） */
+#todo-start-date,
 #todo-date {
     width: 150px;
     flex: none;
@@ -107,6 +108,20 @@ body {
     border-radius: 7px;
     font-size: 14px;
     outline: none;
+}
+
+/* 〜 区切り */
+.date-separator {
+    font-size: 14px;
+    color: #64748b;
+    flex-shrink: 0;
+}
+
+/* 編集モードの日付範囲フィールド */
+.edit-date-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 /* 確定ボタン */

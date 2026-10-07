@@ -1,6 +1,7 @@
 // 画面の要素を取得
 const todoInput = document.getElementById('todo-input');
 const todoList = document.getElementById('todo-list');
+const todoStartDate = document.getElementById('todo-start-date');
 const todoDate = document.getElementById('todo-date');
 const addTodoBtn = document.getElementById('add-todo-btn');
 
@@ -15,6 +16,7 @@ function excuteAddTask(){
     const taskText = todoInput.value.trim();
     if(taskText === '')return;
 
+    const startDate = todoStartDate.value ? todoStartDate.value : null;
     const deadline = todoDate.value ? todoDate.value : '期限なし';
 
     const now = new Date();
@@ -26,6 +28,7 @@ function excuteAddTask(){
         text: taskText,
         isCompleted: false,
         time: timeText,
+        startDate: startDate,
         date: deadline
     };
 
@@ -34,8 +37,10 @@ function excuteAddTask(){
 
     window.electronAPI.notifyTodoChanged();
 
+    todoStartDate.blur();
     todoDate.blur();
-    todoInput.value = ''; // 入力欄をクリア
+    todoInput.value = '';
+    todoStartDate.value = '';
     todoDate.value = '';
     todoInput.focus();
 }
@@ -88,9 +93,20 @@ function createTodoElement(todoObj) {
     timeSpan.textContent = todoObj.time ? todoObj.time : '';
     timeSpan.classList.add('task-time');
 
-    // 期限表示
+    // 期限表示（開始日〜終了日 or 終了日のみ）
     const dateSpan = document.createElement('span');
-    dateSpan.textContent = `〆: ${todoObj.date || '期限なし'}`;
+    const endDate = todoObj.date || '期限なし';
+    const startDate = todoObj.startDate || null;
+
+    if (startDate && endDate !== '期限なし') {
+        dateSpan.textContent = `〆: ${startDate} 〜 ${endDate}`;
+    } else {
+        dateSpan.textContent = `〆: ${endDate}`;
+    }
+
+    // データ属性に保存（編集・保存時に使う）
+    dateSpan.dataset.startDate = startDate || '';
+    dateSpan.dataset.endDate = endDate !== '期限なし' ? endDate : '';
     dateSpan.classList.add('todo-date');
 
     // チェックボックスがクリックされたときの動き
@@ -115,34 +131,66 @@ function createTodoElement(todoObj) {
 
     editBtn.addEventListener('click',() => {
         if (editBtn.textContent === '編集'){
+
+            // テキスト編集フィールド
             const inputField = document.createElement('input');
             inputField.type = 'text';
             inputField.value = span.textContent;
             inputField.classList.add('edit-input');
             span.replaceWith(inputField);
 
-            const dateField = document.createElement('input');
-            dateField.type = 'date';
+            // 開始日・終了日の編集フィールド
+            const startDateField = document.createElement('input');
+            startDateField.type = 'date';
+            startDateField.value = dateSpan.dataset.startDate || '';
+            startDateField.classList.add('edit-start-date');
 
-            const currentFormatDate = dateSpan.textContent.replace('〆: ','');
-            dateField.value = currentFormatDate !== '期限なし' ? currentFormatDate : '';
-            dateField.classList.add('edit-date');
-            dateSpan.replaceWith(dateField);
+            const editSeparator = document.createElement('span');
+            editSeparator.textContent = '〜';
+            editSeparator.classList.add('date-separator');
+
+            const endDateField = document.createElement('input');
+            endDateField.type = 'date';
+            endDateField.value = dateSpan.dataset.endDate || '';
+            endDateField.classList.add('edit-date');
+
+            const dateWrapper = document.createElement('div');
+            dateWrapper.classList.add('edit-date-wrapper');
+            dateWrapper.appendChild(startDateField);
+            dateWrapper.appendChild(editSeparator);
+            dateWrapper.appendChild(endDateField);
+            dateSpan.replaceWith(dateWrapper);
 
             editBtn.textContent = '保存';
 
         }else{
+            // テキストを戻す
             const inputField = taskContent.querySelector('.edit-input');
             if(inputField){
                 span.textContent = inputField.value;
                 inputField.replaceWith(span);
             }
 
-            const dateField = taskContent.querySelector('.edit-date');
-            if(dateField){
-                const newDeadline =dateField.value ? dateField.value : '期限なし';
-                dateSpan.textContent = `〆: ${newDeadline}`;
-                dateField.replaceWith(dateSpan);
+            // 日付範囲を戻す
+            const dateWrapper = taskContent.querySelector('.edit-date-wrapper');
+            if(dateWrapper){
+                const startDateField = dateWrapper.querySelector('.edit-start-date');
+                const endDateField = dateWrapper.querySelector('.edit-date');
+
+                const newStartDate = startDateField ? startDateField.value || null : null;
+                const newEndDate = endDateField ? (endDateField.value || '期限なし') : '期限なし';
+
+                if (newStartDate && newEndDate !== '期限なし') {
+                    dateSpan.textContent = `〆: ${newStartDate} 〜 ${newEndDate}`;
+                    dateSpan.dataset.startDate = newStartDate;
+                    dateSpan.dataset.endDate = newEndDate;
+                } else {
+                    dateSpan.textContent = `〆: ${newEndDate}`;
+                    dateSpan.dataset.startDate = '';
+                    dateSpan.dataset.endDate = newEndDate !== '期限なし' ? newEndDate : '';
+                }
+
+                dateWrapper.replaceWith(dateSpan);
             }
 
             editBtn.textContent = '編集';
@@ -334,11 +382,14 @@ function saveAllTodos(){
             return;
         }
 
-        const dateText = dateSpan
-            ? dateSpan.textContent.replace('〆: ','')
+        const endDate = dateSpan
+            ? (dateSpan.dataset.endDate || '期限なし')
             : '期限なし';
+        const startDate = dateSpan
+            ? (dateSpan.dataset.startDate || null)
+            : null;
 
-            // 既存タスクをIDで探す
+        // 既存タスクをIDで探す
         const todo = todos.find(todo =>
             Number(todo.id) === Number(taskId)
         );
@@ -352,7 +403,8 @@ function saveAllTodos(){
             todo.time = timeSpan
                 ? timeSpan.textContent
                 : '';
-            todo.date = dateText;
+            todo.date = endDate;
+            todo.startDate = startDate || null;
 
         }
     });

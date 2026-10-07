@@ -38,7 +38,23 @@
         <div class="input-area">
 
             <input type="text" id="todo-input" placeholder="新しいタスクを入力...">
-            <input type="date" id="todo-date">
+
+            <!-- カレンダー日付ピッカー -->
+            <div class="date-picker-wrapper">
+                <button type="button" id="date-picker-btn" class="date-picker-btn">期限を選択</button>
+                <div id="date-picker-popup" class="date-picker-popup hidden">
+                    <div class="cal-nav-row">
+                        <button type="button" id="cal-prev" class="cal-nav">‹</button>
+                        <span id="calendar-title"></span>
+                        <button type="button" id="cal-next" class="cal-nav">›</button>
+                    </div>
+                    <div id="calendar-grid" class="calendar-grid"></div>
+                    <div class="cal-footer">
+                        <button type="button" id="cal-clear" class="cal-clear-btn">クリア</button>
+                    </div>
+                </div>
+            </div>
+
             <button id="add-todo-btn" type="button">確定</button>
         </div>
 
@@ -65,6 +81,7 @@
 
     </main>
 
+        <script src="calendar.js"></script>
         <script src="script.js"></script>
 
 </body>

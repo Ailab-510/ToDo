@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, powerMonitor } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -125,6 +125,13 @@ app.whenReady().then(async () => {
 
     // Mac起動時はウィジェットのみ表示
     createWidgetWindow();
+
+    // スリープから復帰した時にウィジェットを更新
+    powerMonitor.on('resume', () => {
+        if (widgetWindow && !widgetWindow.isDestroyed()) {
+            widgetWindow.webContents.send('todo-changed');
+        }
+    });
 
 });
 

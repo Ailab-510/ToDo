@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, powerMonitor, Tray, Menu } = require('electron');
+const { app, BrowserWindow, ipcMain, powerMonitor, Tray, Menu, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
@@ -41,7 +41,8 @@ function createMainWindow() {
 // システムトレイアイコン
 function createTray() {
     const iconPath = path.join(__dirname, 'icon.png');
-    tray = new Tray(iconPath);
+    const icon = nativeImage.createFromPath(iconPath).resize({ width: 16, height: 16 });
+    tray = new Tray(icon);
     tray.setToolTip('Todo');
 
     updateTrayMenu();

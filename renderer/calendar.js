@@ -183,6 +183,12 @@
         popup.classList.add('hidden');
         hoverDate  = null;
         pickingEnd = false;
+        // 終了日が未選択のまま閉じた場合は開始日もクリア
+        if (selStart && !selEnd) {
+            selStart = null;
+            updateBtn();
+            updateRangeClasses();
+        }
     }
 
     // ── クリア ────────────────────────────────────────────

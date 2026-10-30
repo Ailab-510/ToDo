@@ -217,6 +217,7 @@ body {
 .cal-day.is-today {
     font-weight: bold;
     color: #f538bc;
+    background: rgba(245, 56, 188, 0.12);
 }
 
 /* 開始日・終了日 */
